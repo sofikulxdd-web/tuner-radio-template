@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Radio Barsaat | Community radio (HTML template demo)</title>
+<meta name="description" content="A one-page community radio website template with a working tuner dial.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bowlby+One&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{--pink:#ff6fbf;--plum:#2b0a3d;--mint:#b6f5d0;--grape:#4a1766;--milk:#fff5fb}
+*{box-sizing:border-box;margin:0}
+body{background:var(--pink);color:var(--plum);font:400 1.125rem/1.55 Figtree,sans-serif}
+a{color:inherit;text-underline-offset:4px}
+:focus-visible{outline:3px solid var(--plum);outline-offset:3px}
+.wrap{width:min(1180px,100% - 40px);margin-inline:auto}
+nav{display:flex;justify-content:space-between;padding:22px 0;font-weight:700}
+.big{font-family:"Bowlby One",sans-serif;font-weight:400}
+.freq{font-size:clamp(5.2rem,23vw,20rem);line-height:.95;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.now{min-height:6.4em;padding:10px 0 26px;max-width:46ch}
+.now h1{font:400 clamp(1.9rem,4.4vw,3.2rem)/1.1 "Bowlby One",sans-serif;margin-bottom:8px}
+.now p{font-size:1.25rem;font-weight:500}
+.dial{padding-bottom:64px}
+.dial label{display:block;font-weight:700;margin-bottom:10px}
+input[type=range]{-webkit-appearance:none;appearance:none;display:block;width:100%;height:72px;margin:0;cursor:ew-resize;background:linear-gradient(var(--plum),var(--plum)) right center/2px 40px no-repeat,repeating-linear-gradient(90deg,var(--plum) 0 2px,transparent 2px 5%) left center/100% 40px no-repeat}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:12px;height:72px;background:var(--milk);border:3px solid var(--plum)}
+input[type=range]::-moz-range-thumb{width:8px;height:66px;border-radius:0;background:var(--milk);border:3px solid var(--plum)}
+.marks{display:flex;justify-content:space-between;font-weight:700;margin-top:6px}
+.sched{background:var(--plum);color:var(--milk);padding:80px 0}
+.sched :focus-visible{outline-color:var(--mint)}
+h2{font:400 clamp(2.3rem,5.4vw,4rem)/1.05 "Bowlby One",sans-serif;color:var(--mint);margin-bottom:28px}
+.show{width:100%;display:grid;grid-template-columns:7.5em 1fr auto;gap:16px;align-items:baseline;padding:16px 4px;background:none;border:0;border-top:1px solid rgba(255,245,251,.3);color:inherit;font:inherit;text-align:left;cursor:pointer}
+.show:hover{color:var(--mint)}
+.show b{font-size:1.45rem;font-weight:700}
+.show[aria-pressed=true]{color:var(--mint)}
+.join{background:var(--mint);padding:72px 0}
+.join .wrap{display:grid;grid-template-columns:1.2fr 1fr;gap:40px;align-items:center}
+.join h2{color:var(--plum);margin-bottom:12px}
+.join p{max-width:38ch}
+form{display:flex;gap:10px;flex-wrap:wrap}
+form label{flex:1 1 220px;font-weight:700}
+input[type=email]{display:block;width:100%;margin-top:6px;padding:13px;border:2px solid var(--plum);background:#fff;font:inherit;color:inherit}
+form button{align-self:end;padding:15px 24px;background:var(--plum);color:var(--milk);border:0;font:700 1.05rem Figtree,sans-serif;cursor:pointer}
+form button:hover{background:var(--grape)}
+#ok{flex-basis:100%;font-weight:700;min-height:1.5em}
+footer{padding:24px 0;font-size:1rem}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px 28px}
+@media (max-width:760px){.show{grid-template-columns:1fr auto}.show span:first-child{grid-column:1/-1}.join .wrap{grid-template-columns:1fr}.sched,.join{padding:56px 0}.now{min-height:8.5em}}
+</style>
+</head>
+<body>
+<header class="wrap">
+  <nav><span>Radio Barsaat</span><a href="#join">Become a member</a></nav>
+  <output class="big freq" id="freq" for="tune">91.4</output>
+  <div class="now" aria-live="polite"><h1 id="name"></h1><p id="info"></p></div>
+  <div class="dial">
+    <label for="tune">Turn the dial to find a show</label>
+    <input id="tune" type="range" min="88" max="108" step="0.1" value="91.4">
+    <div class="marks" aria-hidden="true"><span>88</span><span>92</span><span>96</span><span>100</span><span>104</span><span>108</span></div>
+  </div>
+</header>
+
+<section class="sched">
+  <div class="wrap">
+    <h2>On the air today</h2>
+    <div id="list"></div>
+  </div>
+</section>
+
+<section class="join" id="join">
+  <div class="wrap">
+    <div><h2>Keep us on the air</h2><p>Radio Barsaat runs on volunteers and listener money. Members get the monthly programme by email.</p></div>
+    <form id="f"><label>Email address<input type="email" name="email" required autocomplete="email"></label><button>Become a member</button><p id="ok" role="status"></p></form>
+  </div>
+</section>
+
+<footer><div class="wrap"><span>Radio Barsaat is a fictional station.</span><a href="https://sofitechllc.com/">Template demo by Sofitech LLC</a></div></footer>
+
+<script>
+const S=[
+ {f:91.4,n:"Bhor Bela",h:"Mitali Sen",t:"6:00 to 9:00",d:"Slow morning ragas and the river weather."},
+ {f:94.8,n:"Tiffin Box",h:"Arif and Pooja",t:"12:00 to 14:00",d:"Lunchtime requests and one recipe a day."},
+ {f:98.2,n:"Para Politics",h:"Neighbourhood desk",t:"16:00 to 17:00",d:"Your ward councillor takes your calls."},
+ {f:101.6,n:"Local Train",h:"DJ Howrah",t:"18:00 to 20:00",d:"Bangla rock for the ride home."},
+ {f:105.3,n:"Raat Jaga",h:"Tanvi Rao",t:"23:00 to 2:00",d:"Long stories for people who cannot sleep."}
+];
+const tune=document.getElementById("tune"),fr=document.getElementById("freq"),nm=document.getElementById("name"),info=document.getElementById("info"),list=document.getElementById("list");
+function draw(){
+ const v=+tune.value,s=S.find(x=>Math.abs(x.f-v)<.35);
+ fr.textContent=v.toFixed(1);tune.setAttribute("aria-valuetext",v.toFixed(1)+" megahertz"+(s?", "+s.n:", static"));
+ nm.textContent=s?s.n:"Static";
+ info.textContent=s?s.d+" With "+s.h+", "+s.t+".":"Nothing on this frequency. Keep turning.";
+ document.querySelectorAll(".show").forEach((b,i)=>b.setAttribute("aria-pressed",S[i]===s));
+}
+S.forEach(s=>{
+ const b=document.createElement("button");b.type="button";b.className="show";
+ const a=document.createElement("span"),c=document.createElement("b"),e=document.createElement("span");
+ a.textContent=s.t;c.textContent=s.n;e.textContent=s.f.toFixed(1)+" FM";b.append(a,c,e);
+ b.addEventListener("click",()=>{tune.value=s.f;draw();scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion:reduce)").matches?"auto":"smooth"})});
+ list.append(b);
+});
+tune.addEventListener("input",draw);
+document.getElementById("f").addEventListener("submit",e=>{e.preventDefault();document.getElementById("ok").textContent="Thanks for joining. This demo form sends nothing."});
+if(matchMedia("(prefers-reduced-motion:reduce)").matches){draw()}else{
+ const end=91.4,start=107.5,t0=performance.now();
+ (function step(t){const p=Math.min((t-t0)/1400,1),q=1-Math.pow(1-p,3);tune.value=(start+(end-start)*q).toFixed(1);draw();if(p<1)requestAnimationFrame(step)})(t0);
+}
+</script>
+</body>
+</html>
